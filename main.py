@@ -1,13 +1,17 @@
 from line import Line, Point
+from maze import Cell
 from window import Window
 
 def main():
     win = Window(800, 600)
     
-    line = Line(Point(100, 100), Point(200, 200))
-    win.draw_line(line, fill_color="blue")
-    line2 = Line(Point(200, 100), Point(100, 200))
-    win.draw_line(line2, fill_color="red")
+    
+    cell3 = Cell(200, 200, 300, 300, win)
+    cell3.has_left_wall = False
+    cell3.has_right_wall = True
+    cell3.has_top_wall = False
+    cell3.has_bottom_wall = True
+    cell3.draw(200, 200, 300, 300)
 
     win.wait_for_close()
     print("Window closed. Exiting...")

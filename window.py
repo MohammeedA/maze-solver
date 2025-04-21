@@ -4,7 +4,7 @@ class Window(Tk):
     def __init__(self, width: int, height: int):
         self.__root = Tk()
         self.__root.title("Window")
-        self.canvas = Canvas(self.__root, width=width, height=height)
+        self.canvas = Canvas(self.__root, width=width, height=height, bg="white")
         self.canvas.pack(fill=BOTH, expand=True)
         self.running = False
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
@@ -15,7 +15,7 @@ class Window(Tk):
         self.canvas.update()
         self.__root.update()
     
-    def draw_line(self, line, fill_color=None):
+    def draw_line(self, line, fill_color="black"):
         line.draw(self.canvas, fill_color)
     
     def wait_for_close(self):
