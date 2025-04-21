@@ -15,6 +15,9 @@ class Window(Tk):
         self.canvas.update()
         self.__root.update()
     
+    def draw_line(self, line, fill_color=None):
+        line.draw(self.canvas, fill_color)
+    
     def wait_for_close(self):
         self.running = True
         while self.running:
