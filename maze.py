@@ -31,6 +31,7 @@ class Maze(object):
         self._create_cells()
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
+        self._reset_cells_visited()
 
     def _create_cells(self):
         """
@@ -151,6 +152,14 @@ class Maze(object):
                 
                 # Recursively process the next cell
                 self._break_walls_r(next_i, next_j)
+    
+    def _reset_cells_visited(self):
+        """
+        Reset the visited status of all cells in the maze.
+        """
+        for row in self.cells:
+            for cell in row:
+                cell.visited = False
 
 class Cell(object):
     """

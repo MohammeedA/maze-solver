@@ -1,5 +1,5 @@
 import unittest
-from maze import Cell
+from maze import Cell, Maze
 
 class TestCell(unittest.TestCase):
     def setUp(self):
@@ -31,6 +31,43 @@ class TestCell(unittest.TestCase):
     def test_cell_repr(self):
         expected = "Cell(0, 0, 10, 10)"
         self.assertEqual(repr(self.cell), expected)
+
+class TestMaze(unittest.TestCase):
+    def setUp(self):
+        # Create a small test maze without a window
+        self.maze = Maze(0, 0, 2, 2, 10, 10)
+        
+    def test_reset_cells_visited(self):
+        # First mark all cells as visited
+        for row in self.maze.cells:
+            for cell in row:
+                cell.visited = True
+                
+        # Verify all cells are marked as visited
+        for row in self.maze.cells:
+            for cell in row:
+                self.assertTrue(cell.visited)
+                
+        # Reset visited status
+        self.maze._reset_cells_visited()
+        
+        # Verify all cells are now marked as not visited
+        for row in self.maze.cells:
+            for cell in row:
+                self.assertFalse(cell.visited)
+    
+    def test_reset_cells_visited_mixed_state(self):
+        # Mark only some cells as visited
+        self.maze.cells[0][0].visited = True
+        self.maze.cells[1][1].visited = True
+        
+        # Reset visited status
+        self.maze._reset_cells_visited()
+        
+        # Verify all cells are now marked as not visited
+        for row in self.maze.cells:
+            for cell in row:
+                self.assertFalse(cell.visited)
 
 if __name__ == '__main__':
     unittest.main()
