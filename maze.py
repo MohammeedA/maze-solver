@@ -1,3 +1,4 @@
+import random
 import time
 from line import Line, Point
 
@@ -6,7 +7,7 @@ class Maze(object):
     A class representing a maze.
     """
 
-    def __init__(self, x1, y1, num_rows, num_cols, cell_width, cell_height, window=None):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_width, cell_height, window=None, seed=None):
         """
         Initialize a maze with its dimensions and an optional window.
 
@@ -25,8 +26,11 @@ class Maze(object):
         self.cell_width = cell_width
         self.cell_height = cell_height
         self.window = window
+        if seed is not None:
+            random.seed(seed)
         self._create_cells()
         self._break_entrance_and_exit()
+        self._break_walls_r(0, 0)
 
     def _create_cells(self):
         """
@@ -36,8 +40,9 @@ class Maze(object):
         for i in range(self.num_rows):
             row = []
             for j in range(self.num_cols):
-                x1 = self._x1 + i * self.cell_width
-                y1 = self._y1 + j * self.cell_height
+                # Calculate cell coordinates - j is for x (columns), i is for y (rows)
+                x1 = self._x1 + j * self.cell_width  # Changed from i to j
+                y1 = self._y1 + i * self.cell_height # Changed from j to i
                 x2 = x1 + self.cell_width
                 y2 = y1 + self.cell_height
                 cell = Cell(x1, y1, x2, y2, self.window)
@@ -91,6 +96,61 @@ class Maze(object):
             time.sleep(0.05)  # Adjust the sleep time for animation speed
         else:
             raise ValueError("No window provided to animate the maze.")
+    
+    def _break_walls_r(self, i, j):
+        """
+        Recursive method to break walls between cells using depth-first traversal.
+        Preserves the outer walls of the maze except for entrance and exit.
+        
+        :param i: Current cell's row index
+        :param j: Current cell's column index
+        """
+        # Mark current cell as visited
+        self.cells[i][j].visited = True
+        self._draw_cell(i, j)
+        
+        # Get all possible directions and randomize their order
+        possible_directions = []
+        
+        # Up - Allow in all rows except breaking the top border wall (except entrance)
+        if i > 0 and not self.cells[i-1][j].visited:
+            possible_directions.append((i-1, j))
+                
+        # Right - Allow if not at rightmost column
+        if j < self.num_cols-1 and not self.cells[i][j+1].visited:
+            possible_directions.append((i, j+1))
+            
+        # Down - Allow in all rows except breaking the bottom border wall (except exit)
+        if i < self.num_rows-1 and not self.cells[i+1][j].visited:
+            possible_directions.append((i+1, j))
+                
+        # Left - Allow if not at leftmost column
+        if j > 0 and not self.cells[i][j-1].visited:
+            possible_directions.append((i, j-1))
+        
+        # Randomize the order of directions
+        random.shuffle(possible_directions)
+        
+        # Try each direction
+        for next_i, next_j in possible_directions:
+            # If the next cell hasn't been visited yet
+            if not self.cells[next_i][next_j].visited:
+                # Break walls between current cell and chosen cell
+                if next_i < i:  # Going up
+                    self.cells[i][j].has_top_wall = False
+                    self.cells[next_i][next_j].has_bottom_wall = False
+                elif next_i > i:  # Going down
+                    self.cells[i][j].has_bottom_wall = False
+                    self.cells[next_i][next_j].has_top_wall = False
+                elif next_j < j:  # Going left
+                    self.cells[i][j].has_left_wall = False
+                    self.cells[next_i][next_j].has_right_wall = False
+                else:  # Going right
+                    self.cells[i][j].has_right_wall = False
+                    self.cells[next_i][next_j].has_left_wall = False
+                
+                # Recursively process the next cell
+                self._break_walls_r(next_i, next_j)
 
 class Cell(object):
     """
@@ -116,6 +176,7 @@ class Cell(object):
         self.has_right_wall = True
         self.has_top_wall = True
         self.has_bottom_wall = True
+        self.visited = False  # Add visited flag for maze generation
 
     def draw(self, x1, y1, x2, y2):
         """
@@ -131,22 +192,22 @@ class Cell(object):
             if self.has_left_wall:
                 self.window.draw_line(Line(Point(x1, y1), Point(x1, y2)))
             else:
-                self.window.draw_line(Line(Point(x1, y1), Point(x1, y2)), fill_color="#d9d9d9")
+                self.window.draw_line(Line(Point(x1, y1), Point(x1, y2)), fill_color="white")
                 
             if self.has_right_wall:
                 self.window.draw_line(Line(Point(x2, y1), Point(x2, y2)))
             else:
-                self.window.draw_line(Line(Point(x2, y1), Point(x2, y2)), fill_color="#d9d9d9")
+                self.window.draw_line(Line(Point(x2, y1), Point(x2, y2)), fill_color="white")
                 
             if self.has_top_wall:
                 self.window.draw_line(Line(Point(x1, y1), Point(x2, y1)))
             else:
-                self.window.draw_line(Line(Point(x1, y1), Point(x2, y1)), fill_color="#d9d9d9")
+                self.window.draw_line(Line(Point(x1, y1), Point(x2, y1)), fill_color="white")
                 
             if self.has_bottom_wall:
                 self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)))
             else:
-                self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)), fill_color="#d9d9d9")
+                self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)), fill_color="white")
         else:
             raise ValueError("No window provided to draw the cell.")
     
