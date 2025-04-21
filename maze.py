@@ -26,7 +26,8 @@ class Maze(object):
         self.cell_height = cell_height
         self.window = window
         self._create_cells()
-    
+        self._break_entrance_and_exit()
+
     def _create_cells(self):
         """
         Create the cells of the maze based on the specified dimensions.
@@ -42,10 +43,26 @@ class Maze(object):
                 cell = Cell(x1, y1, x2, y2, self.window)
                 row.append(cell)
             self.cells.append(row)
+            
+        # Draw cells if window exists
         if self.window:
             for i in range(self.num_rows):
                 for j in range(self.num_cols):
                     self._draw_cell(i, j)
+
+    def _break_entrance_and_exit(self):
+        """
+        Break the entrance (top wall of top-left cell) and exit (bottom wall of bottom-right cell).
+        """
+        # Break entrance (top wall of first cell)
+        self.cells[0][0].has_top_wall = False
+        if self.window:
+            self._draw_cell(0, 0)
+        
+        # Break exit (bottom wall of last cell)
+        self.cells[-1][-1].has_bottom_wall = False
+        if self.window:
+            self._draw_cell(self.num_rows-1, self.num_cols-1)
 
     def _draw_cell(self, i, j):
         """
@@ -54,6 +71,9 @@ class Maze(object):
         :param i: The x-index of the cell.
         :param j: The y-index of the cell.
         """
+        if not self.window:
+            return
+            
         cell = self.cells[i][j]
         x1 = cell._x1
         y1 = cell._y1
@@ -107,14 +127,26 @@ class Cell(object):
         :param y2: The y-coordinate of the bottom-right corner.
         """
         if self.window:
+            # Draw existing walls in black, removed walls in background color
             if self.has_left_wall:
                 self.window.draw_line(Line(Point(x1, y1), Point(x1, y2)))
+            else:
+                self.window.draw_line(Line(Point(x1, y1), Point(x1, y2)), fill_color="#d9d9d9")
+                
             if self.has_right_wall:
                 self.window.draw_line(Line(Point(x2, y1), Point(x2, y2)))
+            else:
+                self.window.draw_line(Line(Point(x2, y1), Point(x2, y2)), fill_color="#d9d9d9")
+                
             if self.has_top_wall:
                 self.window.draw_line(Line(Point(x1, y1), Point(x2, y1)))
+            else:
+                self.window.draw_line(Line(Point(x1, y1), Point(x2, y1)), fill_color="#d9d9d9")
+                
             if self.has_bottom_wall:
                 self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)))
+            else:
+                self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)), fill_color="#d9d9d9")
         else:
             raise ValueError("No window provided to draw the cell.")
     
