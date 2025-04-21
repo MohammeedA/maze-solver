@@ -1,5 +1,76 @@
+import time
 from line import Line, Point
 
+class Maze(object):
+    """
+    A class representing a maze.
+    """
+
+    def __init__(self, x1, y1, num_cells_x, num_cells_y, cell_width, cell_height, window=None):
+        """
+        Initialize a maze with its dimensions and an optional window.
+
+        :param x1: The x-coordinate of the top-left corner.
+        :param y1: The y-coordinate of the top-left corner.
+        :param num_cells_x: The number of cells in the x-direction.
+        :param num_cells_y: The number of cells in the y-direction.
+        :param cell_width: The width of each cell.
+        :param cell_height: The height of each cell.
+        :param window: An optional window object (default is None).
+        """
+        self._x1 = x1
+        self._y1 = y1
+        self.num_cells_x = num_cells_x
+        self.num_cells_y = num_cells_y
+        self.cell_width = cell_width
+        self.cell_height = cell_height
+        self.window = window
+        self._create_cells()
+    
+    def _create_cells(self):
+        """
+        Create the cells of the maze based on the specified dimensions.
+        """
+        self.cells = []
+        for i in range(self.num_cells_x):
+            row = []
+            for j in range(self.num_cells_y):
+                x1 = self._x1 + i * self.cell_width
+                y1 = self._y1 + j * self.cell_height
+                x2 = x1 + self.cell_width
+                y2 = y1 + self.cell_height
+                cell = Cell(x1, y1, x2, y2, self.window)
+                row.append(cell)
+            self.cells.append(row)
+        if self.window:
+            for i in range(self.num_cells_x):
+                for j in range(self.num_cells_y):
+                    self._draw_cell(i, j)
+
+    def _draw_cell(self, i, j):
+        """
+        Draw a cell in the maze.
+
+        :param i: The x-index of the cell.
+        :param j: The y-index of the cell.
+        """
+        cell = self.cells[i][j]
+        x1 = cell._x1
+        y1 = cell._y1
+        x2 = cell._x2
+        y2 = cell._y2
+        cell.draw(x1, y1, x2, y2)
+        self._animate()
+    
+    def _animate(self):
+        """
+        Animate the maze drawing process.
+        """
+        if self.window:
+            self.window.redraw()
+            time.sleep(0.05)  # Adjust the sleep time for animation speed
+        else:
+            raise ValueError("No window provided to animate the maze.")
 
 class Cell(object):
     """
