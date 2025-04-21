@@ -6,22 +6,22 @@ class Maze(object):
     A class representing a maze.
     """
 
-    def __init__(self, x1, y1, num_cells_x, num_cells_y, cell_width, cell_height, window=None):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_width, cell_height, window=None):
         """
         Initialize a maze with its dimensions and an optional window.
 
         :param x1: The x-coordinate of the top-left corner.
         :param y1: The y-coordinate of the top-left corner.
-        :param num_cells_x: The number of cells in the x-direction.
-        :param num_cells_y: The number of cells in the y-direction.
+        :param num_rows: The number of cells in the x-direction.
+        :param num_cols: The number of cells in the y-direction.
         :param cell_width: The width of each cell.
         :param cell_height: The height of each cell.
         :param window: An optional window object (default is None).
         """
         self._x1 = x1
         self._y1 = y1
-        self.num_cells_x = num_cells_x
-        self.num_cells_y = num_cells_y
+        self.num_rows = num_rows
+        self.num_cols = num_cols
         self.cell_width = cell_width
         self.cell_height = cell_height
         self.window = window
@@ -32,9 +32,9 @@ class Maze(object):
         Create the cells of the maze based on the specified dimensions.
         """
         self.cells = []
-        for i in range(self.num_cells_x):
+        for i in range(self.num_rows):
             row = []
-            for j in range(self.num_cells_y):
+            for j in range(self.num_cols):
                 x1 = self._x1 + i * self.cell_width
                 y1 = self._y1 + j * self.cell_height
                 x2 = x1 + self.cell_width
@@ -43,8 +43,8 @@ class Maze(object):
                 row.append(cell)
             self.cells.append(row)
         if self.window:
-            for i in range(self.num_cells_x):
-                for j in range(self.num_cells_y):
+            for i in range(self.num_rows):
+                for j in range(self.num_cols):
                     self._draw_cell(i, j)
 
     def _draw_cell(self, i, j):

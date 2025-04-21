@@ -4,7 +4,7 @@ from window import Window
 
 def main():
     win = Window(800, 600)
-    maze = Maze(50, 50, 10, 10, 50, 50, win)
+    maze = Maze(50, 50, 12, 10, 50, 50, win)
 
     win.wait_for_close()
     print("Window closed. Exiting...")
