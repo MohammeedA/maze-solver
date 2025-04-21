@@ -46,7 +46,34 @@ class Cell(object):
                 self.window.draw_line(Line(Point(x1, y2), Point(x2, y2)))
         else:
             raise ValueError("No window provided to draw the cell.")
-        
+    
+    def draw_move(self, to_cell, undo=False):
+        """
+        Draw a move from this cell to another cell.
+
+        :param to_cell: The target cell to move to.
+        :param undo: If True, draw the move in reverse (default is False).
+        """
+        if self.window:
+            if undo:
+                self.window.draw_line(
+                    Line(
+                        Point( abs((self._x1 + self._x2))/2, abs((self._y1 + self._y2))/2), 
+                        Point( abs((to_cell._x1 + to_cell._x2))/2, abs(to_cell._y1 + to_cell._y2)/2)
+                    ),
+                    fill_color="gray"
+                )
+            else:
+                self.window.draw_line(
+                    Line(
+                        Point( abs(self._x1 + self._x2)/2, abs(self._y1 + self._y2)/2), 
+                        Point( abs(to_cell._x1 + to_cell._x2)/2, abs(to_cell._y1 + to_cell._y2)/2)
+                    ),
+                    fill_color="red"
+                )
+        else:
+            raise ValueError("No window provided to draw the move.")
+
     def __repr__(self):
         """
         Return a string representation of the cell.
