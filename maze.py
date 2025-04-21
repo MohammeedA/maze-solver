@@ -160,6 +160,56 @@ class Maze(object):
         for row in self.cells:
             for cell in row:
                 cell.visited = False
+    
+    def solve(self):
+        """
+        Solve the maze using a depth-first search algorithm.
+        """
+        # Start solving from the entrance (top-left cell)
+        return self._solve_r(0, 0)
+    
+    def _solve_r(self, i, j):
+        """
+        Recursive method to solve the maze.
+
+        :param i: Current cell's row index
+        :param j: Current cell's column index
+        :return: True if the exit is reached, False otherwise
+        """
+        self._animate()
+        # Mark current cell as visited
+        self.cells[i][j].visited = True
+        if self.cells[i][j] == self.cells[-1][-1]:
+            # Reached the exit
+            return True
+        # Get all possible directions
+        possible_directions = []
+        # Up
+        if i > 0 and not self.cells[i-1][j].visited and not self.cells[i][j].has_top_wall:
+            possible_directions.append((i-1, j))
+        # Right
+        if j < self.num_cols-1 and not self.cells[i][j+1].visited and not self.cells[i][j].has_right_wall:
+            possible_directions.append((i, j+1))
+        # Down
+        if i < self.num_rows-1 and not self.cells[i+1][j].visited and not self.cells[i][j].has_bottom_wall:
+            possible_directions.append((i+1, j))
+        # Left
+        if j > 0 and not self.cells[i][j-1].visited and not self.cells[i][j].has_left_wall:
+            possible_directions.append((i, j-1))
+        
+        for next_i, next_j in possible_directions:
+            # If the next cell hasn't been visited yet
+            if not self.cells[next_i][next_j].visited:
+                # Draw the move
+                self.cells[i][j].draw_move(self.cells[next_i][next_j])
+                # Recursively process the next cell
+                if self._solve_r(next_i, next_j):
+                    return True
+                else:
+                    # Undo the move if it doesn't lead to a solution
+                    self.cells[i][j].draw_move(self.cells[next_i][next_j], undo=True)
+        
+        return False
 
 class Cell(object):
     """
