@@ -1,4 +1,4 @@
-from lines import Line, Point
+from line import Line, Point
 from window import Window
 
 def main():
